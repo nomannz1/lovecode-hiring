@@ -242,6 +242,78 @@
     box-shadow:0 8px 30px rgba(124,92,255,0.35);
   }
   .foot-note{color:var(--muted); font-size:13px; margin-top:40px;}
+
+  .stats-bar{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:16px;
+    max-width:820px;
+    margin:44px auto 0;
+  }
+  .stat{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px 16px;
+    text-align:center;
+  }
+  .stat .num{
+    font-size:26px;
+    font-weight:800;
+    background:linear-gradient(90deg,var(--accent),var(--accent3));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    display:block;
+    margin-bottom:4px;
+  }
+  .stat .label{font-size:12.5px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;}
+
+  pre.code{
+    background:#0a0a12;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+    overflow-x:auto;
+    font-family:"SF Mono", Menlo, Consolas, monospace;
+    font-size:12.5px;
+    line-height:1.7;
+    color:#9ee7c8;
+  }
+  pre.code .k{color:#ff6ec7;}
+  pre.code .s{color:#ffd479;}
+  pre.code .c{color:#6b7290;}
+
+  .pipeline{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+    align-items:stretch;
+  }
+  .pipe-step{
+    flex:1 1 150px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px;
+    position:relative;
+  }
+  .pipe-step .file{
+    font-family:"SF Mono", Menlo, Consolas, monospace;
+    font-size:11.5px;
+    color:var(--accent3);
+    display:block;
+    margin-bottom:8px;
+  }
+  .pipe-step h4{font-size:14px; margin-bottom:6px;}
+  .pipe-step p{font-size:12.5px; color:var(--muted);}
+  .pipe-arrow{
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent);
+    font-size:20px;
+    padding:0 6px;
+  }
+  @media (max-width:800px){ .pipe-arrow{transform:rotate(90deg);} }
 </style>
 </head>
 <body>
@@ -251,6 +323,12 @@
   <div class="badge">We're hiring</div>
   <h1>Help us teach an AI<br/><span>how to build real websites.</span></h1>
   <p class="subtitle">Lovecode is an AI website builder — describe a business, get a real, editable, production website in minutes. We're looking for a Gen AI engineer to own the generation brain behind it.</p>
+  <div class="stats-bar">
+    <div class="stat"><span class="num">&lt;60s</span><span class="label">Target build time</span></div>
+    <div class="stat"><span class="num">Claude Sonnet</span><span class="label">Generation model</span></div>
+    <div class="stat"><span class="num">Real Vite</span><span class="label">Not a browser sandbox</span></div>
+    <div class="stat"><span class="num">HMR-streamed</span><span class="label">File-by-file preview</span></div>
+  </div>
 </header>
 
 <section>
@@ -371,6 +449,102 @@
 
 <section>
   <div class="wrap">
+    <div class="section-label">Architecture Deep-Dive</div>
+    <h2>The actual generation pipeline</h2>
+    <p style="color:var(--muted); max-width:640px; margin-bottom:32px;">This is the real shape of the system you'd own — not a black box. Five modules, one live sandbox, streamed end to end.</p>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <span class="file">systemPrompt.ts</span>
+        <h4>Prompt contract</h4>
+        <p>The core instruction set governing structure, tone, and build order for every generation.</p>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <span class="file">tools.ts</span>
+        <h4>Tool schema</h4>
+        <p>Function-call contract the agent uses to emit files/sections in a structured, parseable way.</p>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <span class="file">generate.ts</span>
+        <h4>Orchestration</h4>
+        <p>Plans the site, then runs the worker loop that streams files out as Claude writes them.</p>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <span class="file">liveSession.ts</span>
+        <h4>Live engine</h4>
+        <p>Boots the sandbox in parallel with generation, streams each file into it over HMR as it lands.</p>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <span class="file">buildSteps.ts</span>
+        <h4>Sandbox lifecycle</h4>
+        <p>Dependency install, dev-server start/port-wait, and the final production build for publish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Solved problem, real code</div>
+    <h2>How "never show a blank screen" actually works</h2>
+    <p style="color:var(--muted); max-width:680px; margin-bottom:28px;">
+      The naive fix (<code>React.lazy</code> + <code>Suspense</code>) doesn't work here — a missing section file fails at Vite's
+      static import-analysis, before React ever runs, so error boundaries can't catch it. The real fix, already
+      designed and reference-implemented:
+    </p>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">🛡️</div>
+        <h3>Blank-proof shell</h3>
+        <p>A branded loading shell renders synchronously into the root before any async work — dependency install, module load — even starts. The screen is architecturally never empty.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🧩</div>
+        <h3>Runtime-resolved sections</h3>
+        <p>Sections load via a runtime-string import with a Vite <code>@vite-ignore</code> hint and a cache-busting revision query — so Vite can't statically fail on a file that hasn't landed yet, and each new revision forces a real refetch.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📈</div>
+        <h3>Monotonic progress state</h3>
+        <p>A small <code>build-state.json</code> manifest (revision counter + list of ready files) drives what renders next — guarded so a stale revision can never overwrite a newer one, and a failed section just keeps its last-good render.</p>
+      </div>
+    </div>
+    <pre class="code" style="margin-top:24px;"><span class="c">// the guard that makes progressive rendering safe</span>
+<span class="k">export function</span> isNewerRevision(prev: number, next: number): boolean {
+  <span class="k">return</span> Number.isFinite(prev) && Number.isFinite(next) && next > prev;
+}</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Also on your plate</div>
+    <h2>Other real systems in the pipeline</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">🖼️</div>
+        <h3>Image resolution fallback chain</h3>
+        <p>Generated sites need real imagery, not placeholders: Unsplash → Pexels → generated SVG fallback, resolved server-side per request with proper CORS headers.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🪙</div>
+        <h3>Per-generation cost tracking</h3>
+        <p>Every Claude call's tokens need to map to a credit deduction accurately — this is the piece currently broken and part of what you'd own fixing.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🧯</div>
+        <h3>Write-ordering & reliability</h3>
+        <p>Streamed file writes into the live sandbox need to be sequenced (no out-of-order writes racing each other) and reconciled if one silently fails mid-stream.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
     <div class="section-label">The Team</div>
     <h2>Who you'd be working with</h2>
     <div class="role-grid">
@@ -433,8 +607,8 @@
       <div class="priority-item">
         <div class="priority-rank">01</div>
         <div>
-          <h3>Speed up generation</h3>
-          <p>Builds take too long today. First job: find the real bottleneck — AI response time, sequential vs. parallel steps, sandbox startup — and fix it.</p>
+          <h3>Speed up generation <span class="tag">Target: &lt;60s</span></h3>
+          <p>Builds take too long today. Target is a full generation, live and viewable, in under a minute. First job: find the real bottleneck — Claude response latency, sequential vs. parallel worker steps, cold sandbox boot vs. warm pool — and fix it.</p>
         </div>
       </div>
       <div class="priority-item">
