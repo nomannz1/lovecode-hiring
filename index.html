@@ -303,6 +303,69 @@
 
 <section>
   <div class="wrap">
+    <div class="section-label">Under the hood</div>
+    <h2>The technical rebuild we just shipped</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">📦→🖥️</div>
+        <h3>WebContainer → real isolated sandbox</h3>
+        <p>We fully removed the old in-browser WebContainer approach (browser-based Node runtime — limited, flaky, capped on real npm/native deps) and replaced it with a real isolated server-side sandbox per site: a full Node/Vite dev server running in its own container, so generated projects behave exactly like a real local dev environment.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔥</div>
+        <h3>Warm sandbox pool</h3>
+        <p>Pre-booted, pre-baked sandboxes (dependencies already installed) sit ready in a pool so a user isn't waiting on a cold container boot + npm install on every new site.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔄</div>
+        <h3>Live HMR streaming</h3>
+        <p>As the AI agent writes files, they're streamed straight into the running dev server over hot-module-reload — the preview updates live, file by file, instead of a single build-then-show step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Stack</div>
+    <h2>What you'd be working in</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">▲</div>
+        <h3>Next.js + TypeScript</h3>
+        <p>The platform app, editor UI, and API layer — fully typed end to end.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🟢</div>
+        <h3>Node.js</h3>
+        <p>Powers both the platform backend and the generated sites' own runtime inside each sandbox.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>Vite</h3>
+        <p>Every generated site is a real Vite project — fast HMR is what makes the live streaming preview possible.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🐘</div>
+        <h3>PostgreSQL</h3>
+        <p>Users, projects, generation history, credits/usage — the system of record.</p>
+      </div>
+      <div class="card">
+        <div class="icon">☁️</div>
+        <h3>AWS</h3>
+        <p>Core cloud infrastructure — compute and orchestration for the platform and sandbox fleet.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🪣</div>
+        <h3>Cloudflare R2</h3>
+        <p>Object storage for generated site assets and published builds — S3-compatible, no egress fees, fast to serve published sites globally.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
     <div class="section-label">The Team</div>
     <h2>Who you'd be working with</h2>
     <div class="role-grid">
