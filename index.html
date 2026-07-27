@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lovecode — Gen AI Engineer</title>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --bg2:#12121c;
+    --card:#171724;
+    --border:#2a2a3d;
+    --text:#eef0f7;
+    --muted:#9aa0b4;
+    --accent:#7c5cff;
+    --accent2:#ff6ec7;
+    --accent3:#33e6b0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: radial-gradient(1200px 600px at 20% -10%, #241a4a 0%, transparent 60%),
+                radial-gradient(1000px 500px at 100% 0%, #3a1a3a 0%, transparent 55%),
+                var(--bg);
+    color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:0 24px;}
+  header.hero{
+    padding:100px 24px 80px;
+    text-align:center;
+    position:relative;
+  }
+  .badge{
+    display:inline-block;
+    padding:6px 16px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:rgba(124,92,255,0.1);
+    color:var(--accent);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .logo{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:36px;
+  }
+  .logo .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:inline-block;
+  }
+  h1{
+    font-size:clamp(36px, 6vw, 64px);
+    font-weight:800;
+    letter-spacing:-1.5px;
+    line-height:1.08;
+    margin-bottom:24px;
+  }
+  h1 span{
+    background:linear-gradient(90deg, var(--accent), var(--accent2) 60%, var(--accent3));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .subtitle{
+    font-size:19px;
+    color:var(--muted);
+    max-width:640px;
+    margin:0 auto;
+  }
+  section{
+    padding:64px 24px;
+    border-top:1px solid var(--border);
+  }
+  .section-label{
+    font-size:13px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--accent);
+    margin-bottom:12px;
+  }
+  h2{
+    font-size:clamp(26px,4vw,36px);
+    font-weight:800;
+    letter-spacing:-0.5px;
+    margin-bottom:36px;
+  }
+  .grid3{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:20px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:28px;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    border-color:var(--accent);
+  }
+  .card .icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    margin-bottom:16px;
+    background:linear-gradient(135deg, rgba(124,92,255,0.2), rgba(255,110,199,0.15));
+  }
+  .card h3{font-size:17px; font-weight:700; margin-bottom:8px;}
+  .card p{color:var(--muted); font-size:14.5px;}
+
+  .role-grid{
+    display:grid;
+    grid-template-columns: 1fr 2fr;
+    gap:20px;
+  }
+  .role-grid .card{grid-column: span 1;}
+  @media (max-width:700px){ .role-grid{grid-template-columns:1fr;} }
+
+  .flow{
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+  .flow-item{
+    display:flex;
+    gap:20px;
+    padding:24px 0;
+    border-bottom:1px solid var(--border);
+    align-items:flex-start;
+  }
+  .flow-item:last-child{border-bottom:none;}
+  .flow-num{
+    flex:0 0 auto;
+    width:40px;height:40px;
+    border-radius:10px;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;
+    color:var(--accent);
+    font-size:15px;
+  }
+  .flow-body h3{font-size:17px; font-weight:700; margin-bottom:6px;}
+  .flow-body p{color:var(--muted); font-size:14.5px;}
+
+  .priority-list{display:flex; flex-direction:column; gap:14px;}
+  .priority-item{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px 24px;
+  }
+  .priority-rank{
+    flex:0 0 auto;
+    font-size:28px;
+    font-weight:800;
+    color:var(--accent2);
+    opacity:0.85;
+    width:36px;
+  }
+  .priority-item h3{font-size:16.5px; font-weight:700; margin-bottom:4px;}
+  .priority-item p{color:var(--muted); font-size:14px;}
+  .tag{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:999px;
+    background:rgba(255,110,199,0.12);
+    color:var(--accent2);
+    margin-left:10px;
+    vertical-align:middle;
+    text-transform:uppercase;
+  }
+
+  .future-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+  }
+  .future-card{
+    border-radius:16px;
+    padding:26px;
+    background:linear-gradient(155deg, rgba(124,92,255,0.08), rgba(51,230,176,0.05));
+    border:1px solid var(--border);
+  }
+  .future-card h3{font-size:16.5px; margin-bottom:8px;}
+  .future-card p{color:var(--muted); font-size:14px;}
+
+  .values{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+  }
+  .value-chip{
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px 20px;
+    font-size:14px;
+    color:var(--muted);
+  }
+  .value-chip b{color:var(--text); display:block; margin-bottom:4px; font-size:15px;}
+
+  footer{
+    padding:80px 24px 60px;
+    text-align:center;
+    border-top:1px solid var(--border);
+  }
+  .cta{
+    display:inline-block;
+    margin-top:28px;
+    padding:14px 32px;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    color:#fff;
+    font-weight:700;
+    text-decoration:none;
+    font-size:15px;
+    box-shadow:0 8px 30px rgba(124,92,255,0.35);
+  }
+  .foot-note{color:var(--muted); font-size:13px; margin-top:40px;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="logo"><span class="dot"></span> LOVECODE</div>
+  <div class="badge">We're hiring</div>
+  <h1>Help us teach an AI<br/><span>how to build real websites.</span></h1>
+  <p class="subtitle">Lovecode is an AI website builder — describe a business, get a real, editable, production website in minutes. We're looking for a Gen AI engineer to own the generation brain behind it.</p>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">The Product</div>
+    <h2>What Lovecode actually does</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">💬</div>
+        <h3>Prompt in</h3>
+        <p>A user describes their business in plain language — no templates, no drag-and-drop builder.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>Real site out</h3>
+        <p>An AI agent writes real, working code — pages, sections, styling — into a live sandbox in real time.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🚀</div>
+        <h3>Edit & publish</h3>
+        <p>Users tweak it in an in-browser editor and publish live with one click. Direct competitor to Lovable, v0, and Bolt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Where we're standing</div>
+    <h2>We just hit a major milestone</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">🏗️</div>
+        <h3>Core engine rebuilt</h3>
+        <p>The old container tech is fully replaced. The AI builder now produces noticeably better sites — real structure, real sections, better design decisions.</p>
+      </div>
+      <div class="card">
+        <div class="icon">✅</div>
+        <h3>Foundation is solid</h3>
+        <p>The hard architectural rebuild is done. Now it's about speed, reliability, and quality — the fun part.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🎯</div>
+        <h3>You'd own the brain</h3>
+        <p>The generation pipeline — prompts, orchestration, output quality — is the biggest lever left, and it's the least-owned piece today.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">The Team</div>
+    <h2>Who you'd be working with</h2>
+    <div class="role-grid">
+      <div class="card">
+        <div class="icon">🧭</div>
+        <h3>Founder</h3>
+        <p>Product direction, final architecture calls, works closely with you day to day.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🛠️</div>
+        <h3>Senior Full-Stack Engineer</h3>
+        <p>Owns the platform — app, sandbox infrastructure, editor UI, auth, billing, and the publish pipeline. You'll work closely together wherever generation meets platform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">The Role</div>
+    <h2>What you'd actually be doing</h2>
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-num">01</div>
+        <div class="flow-body">
+          <h3>Own the AI agent pipeline</h3>
+          <p>Our generation system plans a website, then writes real code file-by-file into a live environment the user watches build. You improve how it thinks and how it writes.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">02</div>
+        <div class="flow-body">
+          <h3>Make it faster</h3>
+          <p>Profile the generation loop end-to-end, find where time and tokens are wasted, fix it.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">03</div>
+        <div class="flow-body">
+          <h3>Make it better</h3>
+          <p>Sharper prompting, smarter orchestration between planning/writing/review steps, higher quality output per generation.</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">04</div>
+        <div class="flow-body">
+          <h3>Make it cost less</h3>
+          <p>Every AI call costs real money. Token efficiency and model choice matter as much as raw output quality.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Right now</div>
+    <h2>Current priority <span class="tag">Start here</span></h2>
+    <div class="priority-list">
+      <div class="priority-item">
+        <div class="priority-rank">01</div>
+        <div>
+          <h3>Speed up generation</h3>
+          <p>Builds take too long today. First job: find the real bottleneck — AI response time, sequential vs. parallel steps, sandbox startup — and fix it.</p>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-rank">02</div>
+        <div>
+          <h3>Show the site live, sooner</h3>
+          <p>Users currently watch a blank/loading screen while the AI builds. We've already designed and partly built the fix — a live "assembling" view where real sections appear as they're generated. The remaining piece is entirely on the AI/generation side. Likely your first real project.</p>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-rank">03</div>
+        <div>
+          <h3>Fix errors on published sites</h3>
+          <p>Some finished sites show bugs after going live — needs a systematic pass.</p>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-rank">04</div>
+        <div>
+          <h3>Usage & credit accuracy</h3>
+          <p>Tied to a broader account/billing overhaul in progress — your part is making sure AI usage/cost is tracked correctly per generation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Down the road</div>
+    <h2>Future scope — where this gets exciting</h2>
+    <div class="future-grid">
+      <div class="future-card">
+        <h3>🧭 Model routing & cost optimization</h3>
+        <p>Route tasks to cheaper/faster models where quality allows; smarter model selection per generation step.</p>
+      </div>
+      <div class="future-card">
+        <h3>🤖 Multi-agent generation</h3>
+        <p>Split planning, writing, and quality-review into specialized agents for better, more consistent output.</p>
+      </div>
+      <div class="future-card">
+        <h3>📚 RAG / context-aware generation</h3>
+        <p>Let the AI reference a business's real brand assets, existing content, or data — not generic filler — while building their site.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">How we work</div>
+    <h2>Ground rules</h2>
+    <div class="values">
+      <div class="value-chip"><b>High context, always</b>Full specs before any task — file references, what's tried, what's validated. No vague tickets.</div>
+      <div class="value-chip"><b>Test-driven fixes</b>Every change ships with a test proving the bug existed and is fixed.</div>
+      <div class="value-chip"><b>Green gate</b>Typecheck + full test suite passes clean before anything ships. Every time.</div>
+      <div class="value-chip"><b>Real review</b>Every PR gets real architectural feedback — not a rubber stamp.</div>
+      <div class="value-chip"><b>Production-grade</b>Proper error handling, cost-conscious. No throwaway hacks.</div>
+      <div class="value-chip"><b>Plain-English communication</b>Explain your reasoning clearly when it affects product decisions — not everyone on the team is deep technical.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <h2 style="margin-bottom:8px;">This is a foundational hire.</h2>
+  <p class="subtitle">You'd have real ownership over how Lovecode "thinks" — not just maintaining someone else's prompts.</p>
+  <a class="cta" href="mailto:hello@lovecode.dev">Let's talk →</a>
+  <p class="foot-note">Lovecode · Gen AI Engineer · Remote-friendly, high-context, async-first team</p>
+</footer>
+
+</body>
+</html>
